@@ -14,6 +14,11 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { environment } from '../environments/environment';
 
 /*
+* Data tables
+*/
+import { DataTablesModule } from 'angular-datatables';
+
+/*
 * Componentes
 */
 import { AppComponent } from './app.component';
@@ -32,10 +37,11 @@ import { UserService } from "./services/user.service";
     UsersComponent,
   ],
   imports: [
-    BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    APP_ROUTING
+    APP_ROUTING,
+    BrowserModule,
+    DataTablesModule,
   ],
   providers: [UserService],
   bootstrap: [AppComponent]

@@ -36,3 +36,22 @@
     <p [className]="leadClass">Bienvenido, Jacobo</p>
   </div>
 </div>
+
+<div class="container">
+  <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Nombre</th>
+      <th>Apellido</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of userList">
+      <td>{{ user.key }}</td>
+      <td>{{ user.name }}</td>
+      <td>{{ user.lastName }}</td>
+    </tr>
+  </tbody>
+  </table>
+</div>

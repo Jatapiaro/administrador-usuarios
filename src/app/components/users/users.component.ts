@@ -9,6 +9,7 @@
  * Fecha última modificiacion: 23-abril-2018
  * Nombre Archivo: user.component.ts
  * Archivos relacionados:
+    * ./user.component.css
     * ./user.component.html
  * Plataforma: Windows y OsX
  * Descripción: Controlador para el componente de usuarios
@@ -18,6 +19,7 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from './../../models/User';
 import { UserService } from './../../services/user.service';
+import { Subject } from 'rxjs/Subject';
 
 @Component({
   selector: 'app-users',
@@ -31,11 +33,15 @@ export class UsersComponent implements OnInit {
   * @param color : string variable para guardar el color del que debe verse el jumbotron
   * @param displayClass : string texto con las clases que se van a bindear al texto grande del jumbotron
   * @param leadClass : string texto con las clases que se van a bindear al texto pequeño del jumbotron
+  * @param dtOptions : DataTables.Settings
+  * @param dtTrigger : Subject<Any> variable auxiliar para que se recarge la tabla cuando hay cambios o nuevos items
   */
   userList : User[];
   color : string;
   displayClass : string;
   leadClass : string;
+  dtOptions: DataTables.Settings;
+  dtTrigger: Subject<any>;
 
   /**
   * Constructor
@@ -45,12 +51,18 @@ export class UsersComponent implements OnInit {
     this.color = "my-default-color";
     this.displayClass = `display-4 ${this.color}`;
     this.leadClass = `lead ${this.color}`;
+    this.dtOptions = {};
+    this.dtTrigger = new Subject();
   }
 
   /**
   * Se ejecuta cuando la página carga
   */
   ngOnInit() {
+    this.dtOptions = {
+      pagingType: 'first_last_numbers',
+      pageLength: 1
+    };
     /*
     * Nos suscribimos a la lista de usuarios
     * en dado caso de que haya un cambio
@@ -59,6 +71,7 @@ export class UsersComponent implements OnInit {
     var x = this.userService.getData();
     x.snapshotChanges().subscribe(item => {
       this.userList = [];
+      this.dtTrigger.next();
       item.forEach(element => {
         var y = element.payload.toJSON();
         y["key"] = element.key;
