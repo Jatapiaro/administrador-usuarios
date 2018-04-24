@@ -6,52 +6,78 @@
     <a class="navbar-brand" href="#">Administración de Usuarios</a>
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       <li class="nav-item">
-        <button (click)="changeJumbotronColor('danger-color')" type="button" class="btn btn-danger my-navbar-button">Archivo</button>
+        <button (click)="changeJumbotronColor('danger-color')" type="button" class="btn btn-danger my-navbar-button"><i class="fa fa-file"></i> Archivo</button>
       </li>
       <li class="nav-item">
-        <button (click)="changeJumbotronColor('warning-color')" type="button" class="btn btn-warning my-navbar-button">Menú 1</button>
+        <button (click)="changeJumbotronColor('warning-color')" type="button" class="btn btn-warning my-navbar-button"><i class="fa fa-bars"></i> Menú 1</button>
       </li>
       <li class="nav-item">
-        <button (click)="changeJumbotronColor('info-color')" type="button" class="btn btn-info my-navbar-button">Menú 2</button>
+        <button (click)="changeJumbotronColor('info-color')" type="button" class="btn btn-info my-navbar-button"><i class="fa fa-ellipsis-h"></i> Menú 2</button>
       </li>
       <li class="nav-item">
-        <button (click)="changeJumbotronColor('success-color')" type="button" class="btn btn-success my-navbar-button">Acción</button>
+        <button (click)="changeJumbotronColor('success-color')" type="button" class="btn btn-success my-navbar-button"><i class="fa fa-exclamation"></i> Acción</button>
       </li>
       <li class="nav-item">
-        <button type="button" class="btn btn-primary my-navbar-button">Cambio de Password</button>
+        <button type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-key"></i> Cambio de Password</button>
       </li>
       <li class="nav-item">
-        <button type="button" class="btn btn-primary my-navbar-button">Administrar Usuarios</button>
+        <button (click)="toggleAdministrationPanel(true)" type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-users"></i> Administrar Usuarios</button>
+      </li>
+      <li *ngIf="showAdministrator" class="nav-item">
+        <button (click)="showCreateUserModal()" type="button" class="btn btn-success my-navbar-button"><i class="fa fa-user-plus"></i> Añadir Usuario</button>
       </li>
       <li class="nav-item">
-        <button type="button" class="btn btn-primary my-navbar-button">Salir</button>
+        <button type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-times-circle"></i> Salir</button>
       </li>
     </ul>
   </div>
 </nav>
 
-<div class="jumbotron jumbotron-fluid">
+<div [style.display]="displayMe" style="margin-top: 5%;" class="container">
+  <table class="cell-bordered" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+    <thead>
+      <tr>
+        <th>Key</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of userList">
+        <td>{{ user.key }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ user.lastName }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="!showAdministrator" class="jumbotron jumbotron-fluid">
   <div class="container">
     <h1 [className]="displayClass">DENTRO DEL SISTEMA CACHAFAS!</h1>
     <p [className]="leadClass">Bienvenido, Jacobo</p>
   </div>
 </div>
 
-<div class="container">
-  <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
-  <thead>
-    <tr>
-      <th>Key</th>
-      <th>Nombre</th>
-      <th>Apellido</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let user of userList">
-      <td>{{ user.key }}</td>
-      <td>{{ user.name }}</td>
-      <td>{{ user.lastName }}</td>
-    </tr>
-  </tbody>
-  </table>
+
+<div class="modal fade" id="create-user-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Nuevo Usuario</h5>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="form-group">
+            <label for="titulo">Título</label>
+            <input type="text" class="form-control" id="titulo" aria-describedby="tituloHelp" placeholder="Título">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button (click)="saveNoticia()" type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
 </div>

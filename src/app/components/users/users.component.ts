@@ -20,6 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { User } from './../../models/User';
 import { UserService } from './../../services/user.service';
 import { Subject } from 'rxjs/Subject';
+declare var jQuery : any;
 
 @Component({
   selector: 'app-users',
@@ -29,19 +30,23 @@ import { Subject } from 'rxjs/Subject';
 export class UsersComponent implements OnInit {
 
   /**
-  * @param userList : User[] lista de usuarios
   * @param color : string variable para guardar el color del que debe verse el jumbotron
   * @param displayClass : string texto con las clases que se van a bindear al texto grande del jumbotron
-  * @param leadClass : string texto con las clases que se van a bindear al texto pequeño del jumbotron
+  * @param displayMe : string para indicar el valor de la propiedad style.display
   * @param dtOptions : DataTables.Settings
   * @param dtTrigger : Subject<Any> variable auxiliar para que se recarge la tabla cuando hay cambios o nuevos items
+  * @param leadClass : string texto con las clases que se van a bindear al texto pequeño del jumbotron
+  * @param showAdministrator : boolean indica si el administrador debe ser abierto
+  * @param userList : User[] lista de usuarios
   */
-  userList : User[];
   color : string;
   displayClass : string;
-  leadClass : string;
+  displayMe : string;
   dtOptions: DataTables.Settings;
   dtTrigger: Subject<any>;
+  leadClass : string;
+  showAdministrator : boolean;
+  userList : User[];
 
   /**
   * Constructor
@@ -53,6 +58,8 @@ export class UsersComponent implements OnInit {
     this.leadClass = `lead ${this.color}`;
     this.dtOptions = {};
     this.dtTrigger = new Subject();
+    this.showAdministrator = false;
+    this.displayMe = "none";
   }
 
   /**
@@ -61,7 +68,7 @@ export class UsersComponent implements OnInit {
   ngOnInit() {
     this.dtOptions = {
       pagingType: 'first_last_numbers',
-      pageLength: 1
+      pageLength: 10,
     };
     /*
     * Nos suscribimos a la lista de usuarios
@@ -89,6 +96,27 @@ export class UsersComponent implements OnInit {
     this.color = color;
     this.displayClass = `display-4 ${this.color}`;
     this.leadClass = `lead ${this.color}`;
+    this.toggleAdministrationPanel(false);
+  }
+
+  /**
+  * Muestra u oculta el panel de administración
+  * @param show : boolean si debe mostrarse o no
+  */
+  toggleAdministrationPanel( show : boolean ) {
+    //Solo cambiamos cuando es distinto
+    if ( this.showAdministrator != show  ) {
+      this.showAdministrator = show;
+      if ( this.showAdministrator ) {
+        this.displayMe = "block";
+      } else {
+        this.displayMe = "none";
+      }
+    }
+  }
+
+  showCreateUserModal() {
+    jQuery("#create-user-modal").modal("show");
   }
 
 }
