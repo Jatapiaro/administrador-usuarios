@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 /*
 * Rutas
@@ -42,6 +43,7 @@ import { UserService } from "./services/user.service";
     APP_ROUTING,
     BrowserModule,
     DataTablesModule,
+    FormsModule,
   ],
   providers: [UserService],
   bootstrap: [AppComponent]

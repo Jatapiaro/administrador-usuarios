@@ -46,6 +46,7 @@ export class UsersComponent implements OnInit {
   dtTrigger: Subject<any>;
   leadClass : string;
   showAdministrator : boolean;
+  user : User;
   userList : User[];
 
   /**
@@ -60,6 +61,7 @@ export class UsersComponent implements OnInit {
     this.dtTrigger = new Subject();
     this.showAdministrator = false;
     this.displayMe = "none";
+    this.user = new User();
   }
 
   /**
@@ -99,6 +101,12 @@ export class UsersComponent implements OnInit {
     this.toggleAdministrationPanel(false);
   }
 
+  createUser() {
+    this.userService.insertUser(this.user);
+    this.user = new User();
+    jQuery("#create-user-modal").modal("hide");
+  }
+
   /**
   * Muestra u oculta el panel de administración
   * @param show : boolean si debe mostrarse o no
@@ -116,6 +124,7 @@ export class UsersComponent implements OnInit {
   }
 
   showCreateUserModal() {
+    this.user = new User();
     jQuery("#create-user-modal").modal("show");
   }
 
