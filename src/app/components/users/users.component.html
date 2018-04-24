@@ -1,3 +1,38 @@
-<p>
-  users works!
-</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+    <a class="navbar-brand" href="#">Administración de Usuarios</a>
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item">
+        <button (click)="changeJumbotronColor('danger-color')" type="button" class="btn btn-danger my-navbar-button">Archivo</button>
+      </li>
+      <li class="nav-item">
+        <button (click)="changeJumbotronColor('warning-color')" type="button" class="btn btn-warning my-navbar-button">Menú 1</button>
+      </li>
+      <li class="nav-item">
+        <button (click)="changeJumbotronColor('info-color')" type="button" class="btn btn-info my-navbar-button">Menú 2</button>
+      </li>
+      <li class="nav-item">
+        <button (click)="changeJumbotronColor('success-color')" type="button" class="btn btn-success my-navbar-button">Acción</button>
+      </li>
+      <li class="nav-item">
+        <button type="button" class="btn btn-primary my-navbar-button">Cambio de Password</button>
+      </li>
+      <li class="nav-item">
+        <button type="button" class="btn btn-primary my-navbar-button">Administrar Usuarios</button>
+      </li>
+      <li class="nav-item">
+        <button type="button" class="btn btn-primary my-navbar-button">Salir</button>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 [className]="displayClass">DENTRO DEL SISTEMA CACHAFAS!</h1>
+    <p [className]="leadClass">Bienvenido, Jacobo</p>
+  </div>
+</div>

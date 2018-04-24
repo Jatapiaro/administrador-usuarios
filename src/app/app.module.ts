@@ -13,10 +13,17 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { environment } from '../environments/environment';
 
+/*
+* Componentes
+*/
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { UsersComponent } from './components/users/users.component';
 
+/*
+* Servicios
+*/
+import { UserService } from "./services/user.service";
 
 @NgModule({
   declarations: [
@@ -30,7 +37,7 @@ import { UsersComponent } from './components/users/users.component';
     AngularFireDatabaseModule,
     APP_ROUTING
   ],
-  providers: [],
+  providers: [UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

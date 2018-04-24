@@ -1,0 +1,38 @@
+.my-navbar-button {
+  margin-right: 20px;
+}
+
+@media (max-width: 767px) {
+  .my-navbar-button {
+    margin-bottom: 20px;
+  }
+}
+
+
+.danger-color {
+  color: #ff4444;
+}
+
+.default-color {
+  color: #2BBBAD;
+}
+
+.info-color {
+  color: #33b5e5;
+}
+
+.my-default-color {
+  color: #59698d;
+}
+
+.primary-color {
+  color: #4285F4;
+}
+
+.success-color {
+  color: #00C851;
+}
+
+.warning-color {
+  color: #ff9100;
+}
