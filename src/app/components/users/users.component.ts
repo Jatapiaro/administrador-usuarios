@@ -71,6 +71,7 @@ export class UsersComponent implements OnInit {
     this.dtOptions = {
       pagingType: 'first_last_numbers',
       pageLength: 10,
+      retrieve: true,
     };
     /*
     * Nos suscribimos a la lista de usuarios
@@ -84,7 +85,7 @@ export class UsersComponent implements OnInit {
       item.forEach(element => {
         var y = element.payload.toJSON();
         y["key"] = element.key;
-        this.userList.push(y as User);
+        this.userList.unshift(y as User);
         console.log(this.userList);
       });
     });
