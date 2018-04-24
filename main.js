@@ -9,9 +9,8 @@ function createWindow () {
     width: 800,
     height: 600,
     title: 'Administrador de Usuarios',
-
   });
-
+  win.maximize()
   // load the dist folder from Angular
   win.loadURL(url.format({
     pathname: path.join(__dirname, 'dist/index.html'),

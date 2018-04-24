@@ -6,6 +6,13 @@ import { NgModule } from '@angular/core';
 */
 import { APP_ROUTING } from './app.routes';
 
+/*
+* Firebase
+*/
+import { AngularFireModule } from 'angularfire2';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { environment } from '../environments/environment';
+
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { UsersComponent } from './components/users/users.component';
@@ -19,7 +26,9 @@ import { UsersComponent } from './components/users/users.component';
   ],
   imports: [
     BrowserModule,
-    APP_ROUTING,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule,
+    APP_ROUTING
   ],
   providers: [],
   bootstrap: [AppComponent]
