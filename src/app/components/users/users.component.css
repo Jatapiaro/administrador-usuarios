@@ -1,5 +1,9 @@
 .my-navbar-button {
-  margin-right: 20px;
+  margin-right: 10px;
+}
+
+.my-navbar-button.pull-right {
+  margin-bottom: 10px;
 }
 
 @media (max-width: 767px) {

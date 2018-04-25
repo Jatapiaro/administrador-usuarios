@@ -29,13 +29,25 @@ import { UsersComponent } from './components/users/users.component';
 /*
 * Servicios
 */
+import { SecurityService } from "./services/security.service";
 import { UserService } from "./services/user.service";
+import { ProfilePipe } from './pipes/profile.pipe';
+import { PasswordPipe } from './pipes/password.pipe';
+import { ActivityPipe } from './pipes/activity.pipe';
+
+/*
+* Electron
+*/
+import { NgxElectronModule } from 'ngx-electron';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     UsersComponent,
+    ProfilePipe,
+    PasswordPipe,
+    ActivityPipe,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
@@ -43,9 +55,13 @@ import { UserService } from "./services/user.service";
     APP_ROUTING,
     BrowserModule,
     DataTablesModule,
+    NgxElectronModule,
     FormsModule,
   ],
-  providers: [UserService],
+  providers: [
+    SecurityService,
+    UserService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

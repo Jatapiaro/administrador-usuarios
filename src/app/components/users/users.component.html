@@ -3,7 +3,6 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-    <a class="navbar-brand" href="#">Administración de Usuarios</a>
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       <li class="nav-item">
         <button (click)="changeJumbotronColor('danger-color')" type="button" class="btn btn-danger my-navbar-button"><i class="fa fa-file"></i> Archivo</button>
@@ -23,28 +22,38 @@
       <li class="nav-item">
         <button (click)="toggleAdministrationPanel(true)" type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-users"></i> Administrar Usuarios</button>
       </li>
-      <li *ngIf="showAdministrator" class="nav-item">
-        <button (click)="showCreateUserModal()" type="button" class="btn btn-success my-navbar-button"><i class="fa fa-user-plus"></i> Añadir Usuario</button>
-      </li>
       <li class="nav-item">
-        <button type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-times-circle"></i> Salir</button>
+        <button (click)="logout()" type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-times-circle"></i> Salir</button>
       </li>
     </ul>
   </div>
 </nav>
 
-<div [style.display]="displayMe" style="margin-top: 5%;" class="container">
-  <table  class="cell-bordered" datatable="ng" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+<div [style.display]="displayMe" style="margin-top: 5%; margin-left: 2.5%; margin-right: 2.5%;">
+  <button (click)="showCreateUserModal()" type="button" class="btn btn-success my-navbar-button pull-right"><i class="fa fa-user-plus"></i> Añadir Usuario</button>
+  <table width="100%" class="cell-bordered" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
     <thead>
       <tr>
         <th>Nombre</th>
-        <th>Apellido</th>
+        <th>Puesto</th>
+        <th>Cuenta</th>
+        <th>Contraseña</th>
+        <th>Fecha y Hora de Alta</th>
+        <th>Fecha y Hora de Último Acceso</th>
+        <th>Perfil Asignado</th>
+        <th>Status</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let user of userList">
-        <td>{{ user.name }}</td>
-        <td>{{ user.lastName }}</td>
+        <td>{{ user.name }} {{ user.lastName }}</td>
+        <td>{{ user.position }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.password | password }}</td>
+        <td>{{ user.createdAt | activity }}</td>
+        <td>{{ user.lastActivity | activity }}</td>
+        <td>{{ user.profile | profile }}</td>
+        <td>{{ user.isOnline }}</td>
       </tr>
     </tbody>
   </table>
@@ -67,6 +76,13 @@
       <div class="modal-body">
         <div class="container">
 
+          <div *ngIf="errors.length > 0" class="alert alert-danger">
+            <strong>Cuidado!</strong> Tienes los siguientes errores:
+            <li *ngFor="let error of errors">
+              {{ error }}
+            </li>
+          </div>
+
           <div class="form-row">
             <div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
               <i class="fa fa-id-card"></i>
@@ -83,27 +99,30 @@
 
           <div class="form-row">
             <div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-              <i class="fa fa-id-card"></i>
+              <i class="fa fa-slideshare"></i>
               <label for="puesto">Puesto: </label>
               <input [(ngModel)]="user.position" type="text" class="form-control" id="puesto" placeholder="Puesto">
             </div>
 
             <div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-              <i class="fa fa-id-card"></i>
+              <i class="fa fa-id-badge"></i>
               <label for="perfil">Perfil: </label>
-              <input [(ngModel)]="user.profile" type="text" class="form-control" id="perfil" placeholder="Perfil">
+              <select [(ngModel)]="user.profile" class="form-control" id="perfil">
+                <option value="0">Usuario</option>
+                <option value="1">Administrador</option>
+              </select>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-              <i class="fa fa-id-card"></i>
+              <i class="fa fa-at"></i>
               <label for="cuenta">Cuenta: </label>
               <input [(ngModel)]="user.username" type="text" class="form-control" id="cuenta" placeholder="Cuenta">
             </div>
 
             <div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-              <i class="fa fa-id-card"></i>
+              <i class="fa fa-key"></i>
               <label for="contrasena">Contraseña: </label>
               <input [(ngModel)]="user.password" type="password" class="form-control" id="contrasena" placeholder="Contraseña">
             </div>
