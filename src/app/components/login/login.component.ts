@@ -16,12 +16,7 @@ export class LoginComponent implements OnInit {
   constructor( private router : Router ) { }
 
   ngOnInit() {
-    console.log("Init");
-    /*if ( !localStorage.getItem('userSession') ) {
-      localStorage.setItem('userSession', 'este wey es puto');
-    } else {
-      console.log(localStorage.getItem('userSession'));
-    }*/
+
   }
 
   goToUsers() {

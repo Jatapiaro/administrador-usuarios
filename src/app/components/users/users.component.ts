@@ -77,15 +77,19 @@ export class UsersComponent implements OnInit {
   */
   ngOnInit() {
 
-    if ( !localStorage.getItem('userSession') ) {
+    /*if ( !localStorage.getItem('userSession') ) {
       this.logout();
-    }
+    }*/
 
     this.dtOptions = {
       pagingType: 'first_last_numbers',
       pageLength: 10,
       retrieve: true,
       responsive: true,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy', 'csv', 'excel'
+      ]
     };
     /*
     * Nos suscribimos a la lista de usuarios

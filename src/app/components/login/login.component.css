@@ -43,7 +43,7 @@ body, html {
 }
 
 .container {
-  transform: translateY(50%);
+  transform: translateY(25%);
 }
 
 .profile-img-card {
