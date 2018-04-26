@@ -19,11 +19,14 @@
 
 export class User {
   /**
+  * @param banedDate : number fecha en unix de cuando se dio de baja la cuenta
   * @param blocked : boolean si la cuenta esta bloqueada
   * @param createdAt : number timestamp en unix con la fecha y hora de creación
+  * @param isBaned : boolean si la cuenta fue dada de baja
   * @param isOnline : boolean si la cuenta esta siendo usada
   * @param key : string el id del usuario
   * @param lastActivity : number unix timestamp con la fecha de última actividad del usuario
+  * @param lastLogin : number unix timestamp con la última fecha de inicio de sesión
   * @param lastName : string apellido del usuario
   * @param mustResetPassword : boolean si el usuario debe cambiar su contraseña al iniciar sesión
   * @param name : string nombre del usuario
@@ -33,11 +36,14 @@ export class User {
   * @param profile : number si es admin o usuario
   * @param username : string el username del usuario
   */
+  banedDate : number;
   blocked : boolean
   createdAt : number;
+  isBaned : boolean;
   isOnline : string;
   key : string;
   lastActivity : number;
+  lastLogin : number;
   lastName : string;
   mustResetPassword : boolean;
   name : string;

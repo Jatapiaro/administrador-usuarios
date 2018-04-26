@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as bcrypt from 'bcryptjs';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database'
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import * as moment from 'moment';
 import { User } from '../models/User';
 
@@ -10,6 +10,16 @@ export class SecurityService {
   private userList: AngularFireList<any>;
 
   constructor(private firebase :AngularFireDatabase) {
+  }
+
+  setSession( user : any ) {
+    localStorage.setItem('userSession', JSON.stringify(user));
+  }
+
+  getSession() {
+    if ( localStorage.getItem('userSession') ) {
+      return JSON.parse(localStorage.getItem('userSession'));
+    }
   }
 
   generatePassword( password : String ) {

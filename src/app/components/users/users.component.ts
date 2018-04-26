@@ -40,6 +40,7 @@ export class UsersComponent implements OnInit {
   * @param errors : string[] arreglo con errores para desplegar en caso de ser necesario
   * @param leadClass : string texto con las clases que se van a bindear al texto pequeño del jumbotron
   * @param loaded : boolean si la página ya ha recibido los datos de usuarios
+  * @param logedUser : any el id del usuario que está conectado
   * @param showAdministrator : boolean indica si el administrador debe ser abierto
   * @param user : User modelo para hacer el binding de datos
   * @param userList : User[] lista de usuarios
@@ -52,6 +53,7 @@ export class UsersComponent implements OnInit {
   errors : string[];
   leadClass : string;
   loaded : boolean;
+  logedUser : any;
   showAdministrator : boolean;
   user : User;
   userList : User[];
@@ -72,9 +74,11 @@ export class UsersComponent implements OnInit {
     this.displayMe = "none";
     this.user = new User();
     this.dtOptions = {
+      aoColumnDefs: [{ bSortable: false, aTargets: [8] }],
       pagingType: 'first_last_numbers',
       pageLength: 10,
       retrieve: true,
+      pagination: true,
       responsive: true,
       dom: 'Bfrtip',
       buttons: [
@@ -85,7 +89,7 @@ export class UsersComponent implements OnInit {
             columns: [ 0, 1 ]
           }
         }
-      ]
+      ],
     };
     this.loaded = false;
   }
@@ -94,6 +98,9 @@ export class UsersComponent implements OnInit {
   * Se ejecuta cuando la página carga
   */
   ngOnInit() {
+
+    this.logedUser = this.securityService.getSession();
+    console.log(this.logedUser);
 
     /*if ( !localStorage.getItem('userSession') ) {
       this.logout();
@@ -104,7 +111,7 @@ export class UsersComponent implements OnInit {
     * en dado caso de que haya un cambio
     * actualizamos los datos
     */
-    var x = this.userService.getData();
+    let x = this.userService.getData();
     x.snapshotChanges().subscribe(item => {
       this.loaded = true;
       this.userList = [];
@@ -113,10 +120,12 @@ export class UsersComponent implements OnInit {
         var y = element.payload.toJSON();
         y["key"] = element.key;
         this.userList.unshift(y as User);
-        console.log(this.userList);
       });
     });
+  }
 
+  banUser(index : number) {
+    this.userService.banUser(this.userList[index]);
   }
 
   /**
@@ -135,7 +144,7 @@ export class UsersComponent implements OnInit {
   * un usuario en el modal de creación
   */
   createUser() {
-    this.validateUserCreationErrors();
+    this.validateUserCreationErrors(true);
     if ( this.errors.length == 0 ) {
       if ( this.validateIfUsernameIsNotUsed() ) {
         this.storeUserInFirebase();
@@ -146,7 +155,7 @@ export class UsersComponent implements OnInit {
   /**
   * Validamos que los datos esten correctos
   */
-  validateUserCreationErrors() {
+  validateUserCreationErrors( onCreation : boolean ) {
     this.errors = [];
     if ( !this.user.name || this.user.name.length == 0 ) {
       this.errors.push("Debes introducir el nombre");
@@ -160,11 +169,13 @@ export class UsersComponent implements OnInit {
     if ( !this.user.profile ) {
       this.errors.push("Debes seleccionar un tipo de perfil");
     }
-    if ( !this.user.username || this.user.username.length == 0 ) {
-      this.errors.push("Debes introducir la cuenta");
-    }
-    if ( !this.user.password|| this.user.password.length == 0 ) {
-      this.errors.push("Debes introducir una contraseña");
+    if ( onCreation ) {
+      if ( !this.user.username || this.user.username.length == 0 ) {
+        this.errors.push("Debes introducir la cuenta");
+      }
+      if ( !this.user.password|| this.user.password.length == 0 ) {
+        this.errors.push("Debes introducir una contraseña");
+      }
     }
   }
 
@@ -191,6 +202,26 @@ export class UsersComponent implements OnInit {
     jQuery("#create-user-modal").modal("hide");
   }
 
+  updateUser() {
+    this.validateUserCreationErrors(false);
+    if ( this.errors.length == 0 ) {
+      this.updateUserInFirebase();
+    }
+  }
+
+  /**
+  * Actualiza el usuario en la base de datos
+  * Además actualiza la última interacción del usuario que realizó
+  * la operación
+  */
+  private updateUserInFirebase() {
+    this.userService.updateUser(this.user);
+    this.userService.updateUserActivity(this.logedUser);
+    this.user = new User();
+    this.errors = [];
+    jQuery("#update-user-modal").modal("hide");
+  }
+
   /**
   * Muestra u oculta el panel de administración
   * @param show : boolean si debe mostrarse o no
@@ -207,13 +238,36 @@ export class UsersComponent implements OnInit {
   }
 
   /**
-  * Se llama cuando se da clcik al botón de nuevo usuario
+  * Se llama cuando se da click al botón de nuevo usuario
   * desplegando el modal para la creación
   */
   showCreateUserModal() {
     this.user = new User();
     this.errors = [];
     jQuery("#create-user-modal").modal("show");
+  }
+
+  /**
+  * Se llama cuando se da click al botón de actualizar usuario
+  * desplegando el modal para la actualización
+  */
+  showUpdateUserModal(index : number) {
+    this.user = new User();
+    /*
+    * Copiamos el contenido del usuario deseado
+    * en una nueva variable, de este modo, si se cancela
+    * la edición no se modifican los datos del usuario listado
+    * en la tabla
+    */
+    let selectedUser = this.userList[index];
+    this.user.key = selectedUser.key;
+    this.user.username = selectedUser.username;
+    this.user.name = selectedUser.name;
+    this.user.lastName = selectedUser.lastName;
+    this.user.position = selectedUser.position;
+    this.user.profile = selectedUser.profile;
+    this.errors = [];
+    jQuery("#update-user-modal").modal("show");
   }
 
   logout() {

@@ -24,7 +24,8 @@
 
 import { RouterModule, Routes } from "@angular/router";
 import { LoginComponent } from "./components/login/login.component";
-import { UsersComponent} from "./components/users/users.component";
+import { UsersComponent } from "./components/users/users.component";
+import { ResetPasswordComponent } from "./components/reset-password/reset-password.component";
 
 /*
 * Creamos una constante para almacenar todas las rutas
@@ -34,6 +35,7 @@ import { UsersComponent} from "./components/users/users.component";
 const APP_ROUTES : Routes = [
   { path: 'home', component: LoginComponent },
   { path: 'users', component: UsersComponent },
+  { path: 'reset', component: ResetPasswordComponent },
   { path: '**', pathMatch: 'full', redirectTo: 'home' }
 ];
 

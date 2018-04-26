@@ -9,7 +9,7 @@ export class ActivityPipe implements PipeTransform {
   transform(value: number, args?: any): any {
     if ( value != 0 ) {
       let date = moment.unix(value).lang('es');
-      return date.calendar();
+      return date.format('lll');
     }
     return "Sin Actividad";
   }

@@ -12,6 +12,10 @@
   }
 }
 
+.btn-sm {
+  margin-bottom: 5px;
+}
+
 .danger-color {
   color: #ff4444;
 }

@@ -31,6 +31,11 @@ import { UsersComponent } from './components/users/users.component';
 */
 import { SecurityService } from "./services/security.service";
 import { UserService } from "./services/user.service";
+import { ParametersService } from "./services/parameters.service";
+
+/*
+* Pipes
+*/
 import { ProfilePipe } from './pipes/profile.pipe';
 import { PasswordPipe } from './pipes/password.pipe';
 import { ActivityPipe } from './pipes/activity.pipe';
@@ -39,6 +44,8 @@ import { ActivityPipe } from './pipes/activity.pipe';
 * Electron
 */
 import { NgxElectronModule } from 'ngx-electron';
+import { StatusPipe } from './pipes/status.pipe';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +55,8 @@ import { NgxElectronModule } from 'ngx-electron';
     ProfilePipe,
     PasswordPipe,
     ActivityPipe,
+    StatusPipe,
+    ResetPasswordComponent,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
@@ -60,7 +69,8 @@ import { NgxElectronModule } from 'ngx-electron';
   ],
   providers: [
     SecurityService,
-    UserService
+    UserService,
+    ParametersService
   ],
   bootstrap: [AppComponent]
 })
