@@ -39,6 +39,7 @@ export class UsersComponent implements OnInit {
   * @param dtTrigger : Subject<Any> variable auxiliar para que se recarge la tabla cuando hay cambios o nuevos items
   * @param errors : string[] arreglo con errores para desplegar en caso de ser necesario
   * @param leadClass : string texto con las clases que se van a bindear al texto pequeño del jumbotron
+  * @param loaded : boolean si la página ya ha recibido los datos de usuarios
   * @param showAdministrator : boolean indica si el administrador debe ser abierto
   * @param user : User modelo para hacer el binding de datos
   * @param userList : User[] lista de usuarios
@@ -50,10 +51,10 @@ export class UsersComponent implements OnInit {
   dtTrigger: Subject<any>;
   errors : string[];
   leadClass : string;
+  loaded : boolean;
   showAdministrator : boolean;
   user : User;
   userList : User[];
-
   /**
   * Constructor
   * @param userService : UserService servicio para hacer las operaciones CRUD de usuarios
@@ -70,6 +71,23 @@ export class UsersComponent implements OnInit {
     this.showAdministrator = false;
     this.displayMe = "none";
     this.user = new User();
+    this.dtOptions = {
+      pagingType: 'first_last_numbers',
+      pageLength: 10,
+      retrieve: true,
+      responsive: true,
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'excelHtml5',
+          text: 'Exportar a Excel',
+          exportOptions: {
+            columns: [ 0, 1 ]
+          }
+        }
+      ]
+    };
+    this.loaded = false;
   }
 
   /**
@@ -81,16 +99,6 @@ export class UsersComponent implements OnInit {
       this.logout();
     }*/
 
-    this.dtOptions = {
-      pagingType: 'first_last_numbers',
-      pageLength: 10,
-      retrieve: true,
-      responsive: true,
-      dom: 'Bfrtip',
-      buttons: [
-        'excel'
-      ]
-    };
     /*
     * Nos suscribimos a la lista de usuarios
     * en dado caso de que haya un cambio
@@ -98,6 +106,7 @@ export class UsersComponent implements OnInit {
     */
     var x = this.userService.getData();
     x.snapshotChanges().subscribe(item => {
+      this.loaded = true;
       this.userList = [];
       this.dtTrigger.next();
       item.forEach(element => {
@@ -191,9 +200,6 @@ export class UsersComponent implements OnInit {
       this.showAdministrator = show;
       if ( this.showAdministrator ) {
         this.displayMe = "block";
-        jQuery(".buttons-excel").each(function() {
-          $(this).html("Exportar a Excel");
-        });
       } else {
         this.displayMe = "none";
       }

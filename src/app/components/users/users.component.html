@@ -30,6 +30,7 @@
 </nav>
 
 <div [style.display]="displayMe" style="margin-top: 5%; margin-left: 2.5%; margin-right: 2.5%;">
+  <img class="pull-left" style="height: 60px;" src="assets/loading.gif" *ngIf="!loaded">
   <button (click)="showCreateUserModal()" type="button" class="btn btn-success my-navbar-button pull-right"><i class="fa fa-user-plus"></i> Añadir Usuario</button>
   <table width="100%" class="cell-bordered" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
     <thead>
