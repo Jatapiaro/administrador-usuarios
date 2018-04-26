@@ -41,4 +41,11 @@ export class UserService {
     });
   }
 
+  updateUser( user : User ) {
+    this.userList.update(user.key, {
+      lastActivity:  moment().unix(),
+      isOnline: true,
+    });
+  }
+
 }

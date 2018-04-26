@@ -88,7 +88,7 @@ export class UsersComponent implements OnInit {
       responsive: true,
       dom: 'Bfrtip',
       buttons: [
-        'copy', 'csv', 'excel'
+        'excel'
       ]
     };
     /*
@@ -107,6 +107,7 @@ export class UsersComponent implements OnInit {
         console.log(this.userList);
       });
     });
+
   }
 
   /**
@@ -190,6 +191,9 @@ export class UsersComponent implements OnInit {
       this.showAdministrator = show;
       if ( this.showAdministrator ) {
         this.displayMe = "block";
+        jQuery(".buttons-excel").each(function() {
+          $(this).html("Exportar a Excel");
+        });
       } else {
         this.displayMe = "none";
       }
