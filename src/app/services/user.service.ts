@@ -61,31 +61,41 @@ export class UserService {
   }
 
   updateUserActivity( user : any ) {
+    user.lastActivity = moment().unix();
+    this.securityService.setSession(user);
     this.userList.update(user.key, {
-      lastActivity:  moment().unix()
+      lastActivity:  user.lastActivity
     });
   }
 
   updateUserOnLogin( user : User ) {
+    user.passwordHistory = Object.values(user.passwordHistory);
+    user.lastLogin = moment().unix();
+    user.lastActivity = moment().unix();
+    user.isOnline = true;
+    this.securityService.setSession(user);
     this.userList.update(user.key, {
-      lastActivity:  moment().unix(),
-      lastLogin: moment().unix(),
+      lastActivity:  user.lastActivity,
+      lastLogin: user.lastLogin,
       isOnline: true,
     });
   }
 
   updateUserPassword( user : any ) {
+
     if ( user.mustResetPassword ) {
       user.mustResetPassword = false;
     }
     user.passwordHistory.unshift(this.securityService.generatePassword(user.password));
+    user.lastLogin = moment().unix()
     this.securityService.setSession(user);
     this.userList.update(user.key, {
-      lastLogin: moment().unix(),
+      lastLogin: user.lastLogin,
       password: user.passwordHistory[0],
       passwordHistory: user.passwordHistory,
       mustResetPassword: user.mustResetPassword,
     });
+
   }
 
 }

@@ -40,7 +40,7 @@ export class User {
   blocked : boolean
   createdAt : number;
   isBaned : boolean;
-  isOnline : string;
+  isOnline : boolean;
   key : string;
   lastActivity : number;
   lastLogin : number;

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Parameters } from '../models/Parameters';
+import { SecurityService } from './security.service';
 
 @Injectable()
 export class ParametersService {
 
   private parametersList: AngularFireList<any>;
 
-  constructor(private firebase :AngularFireDatabase) {
+  constructor(private firebase : AngularFireDatabase,
+    private securityService : SecurityService) {
     this.parametersList = this.firebase.list('parameters');
   }
 
@@ -31,7 +33,7 @@ export class ParametersService {
     })
   }
 
-  validatePasswordRequirements( parameters : Parameters, password : string  ) {
+  validatePasswordRequirements( parameters : Parameters, passwordHistory : string[], password : string  ) {
     let errors = [];
     if ( password.length < parameters.passwordLength ) {
       errors.push(`La contraseña debe tener al menos ${parameters.passwordLength} caracteres`);
@@ -54,6 +56,12 @@ export class ParametersService {
     if ( parameters.passwordMustHaveSpecialCharacters ) {
       if ( !this.checkSpecialCharacters(password) ) {
         errors.push("La contraseña debe tener al menos un carácter especial *|,\":<>[]{}`\';()@&$#%");
+      }
+    }
+    for ( let i = 0; i<passwordHistory.length && i<parameters.maxPasswordHistory; i++ ) {
+      if ( this.securityService.validPassword(password, passwordHistory[i]) ) {
+        errors.push(`Debes introducir una contraseña que no hayas usado ${parameters.maxPasswordHistory} veces antes`);
+        break;
       }
     }
     return errors;

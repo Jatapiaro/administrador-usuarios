@@ -86,7 +86,7 @@ export class UsersComponent implements OnInit {
           extend: 'excelHtml5',
           text: 'Exportar a Excel',
           exportOptions: {
-            columns: [ 0, 1 ]
+            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
           }
         }
       ],
@@ -99,6 +99,7 @@ export class UsersComponent implements OnInit {
   */
   ngOnInit() {
 
+    console.log("After enter to users");
     this.logedUser = this.securityService.getSession();
     console.log(this.logedUser);
 

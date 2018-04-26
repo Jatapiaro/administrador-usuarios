@@ -41,6 +41,7 @@ export class ResetPasswordComponent implements OnInit {
     this.errors = [];
     this.once = true;
     this.user = this.securityService.getSession();
+    console.log(this.user);
     this.user.passwordHistory = Object.values(this.user.passwordHistory);
     this.message = (this.user.passwordHistory.length == 1)? 'Al ser tu primer ingreso al sistema, te pedimos configurar tu contraseña' : 'Solicitaste un reseteo de contraseña, por favor ingresa tu nueva contraseña.';
     var x = this.parametersService.getParametersList();
@@ -102,7 +103,7 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   validatePasswordRequirements() {
-    this.errors = this.parametersService.validatePasswordRequirements(this.parameters, this.password);
+    this.errors = this.parametersService.validatePasswordRequirements(this.parameters, this.user.passwordHistory, this.password);
   }
 
 

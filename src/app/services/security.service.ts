@@ -33,9 +33,14 @@ export class SecurityService {
       ref.orderByChild('username').equalTo(username));
   }
 
+  validPassword( password : string, userPassword : string ) {
+    let salt = userPassword.substring(0, 29);
+    let validPassword = bcrypt.compareSync(password, userPassword);
+    return validPassword;
+  }
+
   verifyIfPasswordIsCorrect( user : User, password : string ) {
-    let salt = user.password.substring(0, 29);
-    let validPassword = bcrypt.compareSync(password, user.password);
+    let validPassword = this.validPassword(password, user.password);
     if ( validPassword ) {
       localStorage.setItem('userSession', JSON.stringify(user));
     }
