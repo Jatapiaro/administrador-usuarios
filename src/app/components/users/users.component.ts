@@ -124,6 +124,7 @@ export class UsersComponent implements OnInit {
       retrieve: true,
       pagination: true,
       responsive: true,
+      sortable: false,
       dom: 'Bfrtip',
       buttons: [
         {
@@ -138,6 +139,7 @@ export class UsersComponent implements OnInit {
     };
     this.dtOptions2 = {
       pagingType: 'first_last_numbers',
+      aoColumnDefs: [{ bSortable: false, aTargets: [0,1,2,3,4] }],
       pageLength: 10,
       retrieve: true,
       pagination: true,
@@ -246,6 +248,8 @@ export class UsersComponent implements OnInit {
       // Destroy the table first
       dtInstance.clear();
       dtInstance.destroy();
+      this.dtTrigger.next();
+      this.dtTrigger2.next();
     });
   }
 
@@ -324,6 +328,7 @@ export class UsersComponent implements OnInit {
     this.user.remainingAttempts = this.parameters.maxLoginAttempts;
     this.userService.insertUser(this.user);
     this.userService.updateUserActivity(this.logedUser);
+    this.pushMessage(`Usuario ${this.user.username} creado correctamente`);
     this.user = new User();
     this.errors = [];
     this.userList = [];
@@ -391,6 +396,7 @@ export class UsersComponent implements OnInit {
   */
   private updateUserInFirebase() {
     this.userService.updateUser(this.user);
+    this.pushMessage(`Usuario ${this.user.username} actualizado correctamente`);
     this.userService.updateUserActivity(this.logedUser);
     this.reload();
     this.user = new User();
@@ -619,6 +625,7 @@ export class UsersComponent implements OnInit {
     this.userService.updateUserActivity(this.logedUser);
     let user = this.userList[index];
     this.userService.unlockUser(user, this.parameters.maxLoginAttempts);
+    this.pushMessage(`Usuario ${user.username} desbloqueado`);
     this.reload();
   }
 
@@ -671,6 +678,7 @@ export class UsersComponent implements OnInit {
   banUser(index : number) {
     this.userService.updateUserActivity(this.logedUser);
     this.userService.banUser(this.userList[index]);
+    this.pushMessage(`Usuario ${this.userList[index].username} baneado`);
     this.reload();
   }
 
