@@ -18,7 +18,7 @@
  * @author jatapiaro
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from './../../models/User';
 import { Log } from './../../models/Log';
@@ -30,6 +30,7 @@ import { LogService } from './../../services/log.service';
 import { Subject } from 'rxjs/Subject';
 import { OnDestroy } from "@angular/core";
 import { ISubscription } from "rxjs/Subscription";
+import { DataTableDirective } from 'angular-datatables';
 import * as moment from 'moment';
 declare var jQuery : any;
 
@@ -90,6 +91,10 @@ export class UsersComponent implements OnInit {
   public subscription2 : ISubscription;
   public subscription3 : ISubscription;
   public once : boolean;
+  @ViewChild(DataTableDirective)
+  dtElement : DataTableDirective;
+  @ViewChild(DataTableDirective)
+  dtElement2 : DataTableDirective;
 
   /**
   * Constructor
@@ -113,7 +118,7 @@ export class UsersComponent implements OnInit {
     this.displayMe2 = "none";
     this.user = new User();
     this.dtOptions = {
-      aoColumnDefs: [{ bSortable: false, aTargets: [8] }],
+      aoColumnDefs: [{ bSortable: false, aTargets: [0,1,2,3,4,5,6,7,8] }],
       pagingType: 'first_last_numbers',
       pageLength: 10,
       retrieve: true,
@@ -171,6 +176,8 @@ export class UsersComponent implements OnInit {
     } else {
       this.logedUser = this.securityService.getSession();
     }
+
+
 
     /*
     * Nos suscribimos a la lista de usuarios
@@ -232,6 +239,14 @@ export class UsersComponent implements OnInit {
     if ( this.subscription3 ) {
       this.subscription3.unsubscribe();
     }
+  }
+
+  reload() {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      // Destroy the table first
+      dtInstance.clear();
+      dtInstance.destroy();
+    });
   }
 
 
@@ -311,6 +326,8 @@ export class UsersComponent implements OnInit {
     this.userService.updateUserActivity(this.logedUser);
     this.user = new User();
     this.errors = [];
+    this.userList = [];
+    this.reload();
     jQuery("#create-user-modal").modal("hide");
   }
 
@@ -375,6 +392,7 @@ export class UsersComponent implements OnInit {
   private updateUserInFirebase() {
     this.userService.updateUser(this.user);
     this.userService.updateUserActivity(this.logedUser);
+    this.reload();
     this.user = new User();
     this.errors = [];
     jQuery("#update-user-modal").modal("hide");
@@ -486,6 +504,7 @@ export class UsersComponent implements OnInit {
         this.logedUser.password = this.password;
         this.userService.resetPassword(this.user, this.password, this.parameters.maxLoginAttempts);
         this.userService.updateUserActivity(this.logedUser);
+        this.reload();
         this.pushMessage("La contraseña se ha reseteado");
         jQuery("#reset-password-modal").modal("hide");
       }
@@ -600,6 +619,7 @@ export class UsersComponent implements OnInit {
     this.userService.updateUserActivity(this.logedUser);
     let user = this.userList[index];
     this.userService.unlockUser(user, this.parameters.maxLoginAttempts);
+    this.reload();
   }
 
   /**
@@ -651,6 +671,7 @@ export class UsersComponent implements OnInit {
   banUser(index : number) {
     this.userService.updateUserActivity(this.logedUser);
     this.userService.banUser(this.userList[index]);
+    this.reload();
   }
 
   /**
