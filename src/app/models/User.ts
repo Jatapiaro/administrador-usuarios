@@ -30,6 +30,7 @@ export class User {
   * @param lastName : string apellido del usuario
   * @param mustResetPassword : boolean si el usuario debe cambiar su contraseña al iniciar sesión
   * @param name : string nombre del usuario
+  * @param remainingAttempts : number número de intentos restantes
   * @param password : string contraseña actual
   * @param passwordHistory : string[] lista de las constraseñas que se han usado para esta cuenta
   * @param position : string el puesto del usuario
@@ -51,5 +52,6 @@ export class User {
   passwordHistory : string[];
   position : string;
   profile : number;
+  remainingAttempts : number;
   username : string;
 }

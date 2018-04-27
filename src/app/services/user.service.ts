@@ -14,6 +14,18 @@ export class UserService {
     this.userList = this.firebase.list('users');
   }
 
+  logout(user : any) {
+    this.userList.update(user.key, {
+      isOnline: false,
+    });
+  }
+
+  logoutUserDueToInactivity( user : any ) {
+    this.userList.update(user.key, {
+      isOnline: false,
+    })
+  }
+
   banUser( user : User ) {
     this.userList.update(user.key, {
       banedDate: moment().unix(),
@@ -45,9 +57,29 @@ export class UserService {
       name: user.name,
       password: user.passwordHistory[0],
       passwordHistory: user.passwordHistory,
+      remainingAttempts: user.remainingAttempts,
       position: user.position,
       profile: user.profile,
       username: user.username,
+    });
+  }
+
+  resetPassword( user : User, password : string, remainingAttempts : number) {
+    user.passwordHistory = Object.values(user.passwordHistory);
+    user.passwordHistory.unshift(this.securityService.generatePassword(password));
+    this.userList.update(user.key, {
+      passwordHistory: user.passwordHistory,
+      password: user.passwordHistory[0],
+      blocked: false,
+      remainingAttempts: remainingAttempts,
+      mustResetPassword: true,
+    });
+  }
+
+  unlockUser( user : User, remainingAttempts : number ) {
+    this.userList.update(user.key, {
+      blocked: false,
+      remainingAttempts: remainingAttempts
     });
   }
 
@@ -68,7 +100,8 @@ export class UserService {
     });
   }
 
-  updateUserOnLogin( user : User ) {
+  updateUserOnLogin( user : User, remainingAttempts : number ) {
+    user.remainingAttempts = remainingAttempts;
     user.passwordHistory = Object.values(user.passwordHistory);
     user.lastLogin = moment().unix();
     user.lastActivity = moment().unix();
@@ -77,17 +110,38 @@ export class UserService {
     this.userList.update(user.key, {
       lastActivity:  user.lastActivity,
       lastLogin: user.lastLogin,
+      remainingAttempts: user.remainingAttempts,
       isOnline: true,
     });
   }
 
-  updateUserPassword( user : any ) {
+  updateUserRemainingAttempts(user : User, remainingAttempts : number ) {
+    this.userList.update(user.key, {
+      remainingAttempts:remainingAttempts,
+    });
+  }
 
+  updateUserOnLoginFail( user : User ) {
+    user.remainingAttempts = user.remainingAttempts - 1;
+    this.userList.update(user.key, {
+      remainingAttempts: user.remainingAttempts,
+    });
+  }
+
+  updateUserAsBlocked( user : User ) {
+    this.userList.update(user.key, {
+      blocked: true,
+      remainingAttempts: 0,
+    });
+  }
+
+  updateUserPassword( user : any ) {
     if ( user.mustResetPassword ) {
       user.mustResetPassword = false;
     }
     user.passwordHistory.unshift(this.securityService.generatePassword(user.password));
-    user.lastLogin = moment().unix()
+    user.password = user.passwordHistory[0];
+    user.lastLogin = moment().unix();
     this.securityService.setSession(user);
     this.userList.update(user.key, {
       lastLogin: user.lastLogin,
@@ -95,7 +149,18 @@ export class UserService {
       passwordHistory: user.passwordHistory,
       mustResetPassword: user.mustResetPassword,
     });
+  }
 
+  updateUserPasswordSimple( user : any ) {
+    user.passwordHistory.unshift(this.securityService.generatePassword(user.password));
+    user.password = user.passwordHistory[0];
+    user.lastActivity = moment().unix();
+    this.securityService.setSession(user);
+    this.userList.update(user.key, {
+      lastActivity: user.lastActivity,
+      password: user.passwordHistory[0],
+      passwordHistory: user.passwordHistory,
+    });
   }
 
 }

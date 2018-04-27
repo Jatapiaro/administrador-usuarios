@@ -34,5 +34,6 @@ export class Parameters {
 
   maxLoginAttempts : number = 3;
   maxPasswordHistory : number = 3;
+  maxInactivityPeriod : number = 5;
 
 }

@@ -7,20 +7,25 @@
       <li class="nav-item">
         <button (click)="changeJumbotronColor('danger-color')" type="button" class="btn btn-danger my-navbar-button"><i class="fa fa-file"></i> Archivo</button>
       </li>
-      <li class="nav-item">
+      <li *ngIf="logedUser.profile == '1'" class="nav-item">
+        <button (click)="showParametersModal()" type="button" class="btn btn-warning my-navbar-button"><i class="fa fa-cogs"></i> Administración de Parámetros</button>
+      </li>
+      <li *ngIf="logedUser.profile != '1'" class="nav-item">
         <button (click)="changeJumbotronColor('warning-color')" type="button" class="btn btn-warning my-navbar-button"><i class="fa fa-bars"></i> Menú 1</button>
       </li>
-      <li class="nav-item">
+      <li *ngIf="logedUser.profile == '1'" class="nav-item">
+        <button type="button" class="btn btn-info my-navbar-button"><i class="fa fa-line-chart"></i> Bitácoras</button>
+      </li>
+      <li *ngIf="logedUser.profile != '1'" class="nav-item">
         <button (click)="changeJumbotronColor('info-color')" type="button" class="btn btn-info my-navbar-button"><i class="fa fa-ellipsis-h"></i> Menú 2</button>
       </li>
       <li class="nav-item">
         <button (click)="changeJumbotronColor('success-color')" type="button" class="btn btn-success my-navbar-button"><i class="fa fa-exclamation"></i> Acción</button>
       </li>
       <li class="nav-item">
-        <button type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-key"></i> Cambio de Password</button>
+        <button (click)="showChangePasswordModal()" type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-key"></i> Cambio de Password</button>
       </li>
-      <!--*ngIf="logedUser.profile == '1'"-->
-      <li class="nav-item">
+      <li *ngIf="logedUser.profile == '1'" class="nav-item">
         <button (click)="toggleAdministrationPanel(true)" type="button" class="btn btn-primary my-navbar-button"><i class="fa fa-users"></i> Administrar Usuarios</button>
       </li>
       <li class="nav-item">
@@ -29,6 +34,13 @@
     </ul>
   </div>
 </nav>
+
+<div *ngIf="messages.length > 0" class="alert alert-success">
+  <strong>Bien!</strong> Se ha realizado exitosamente la siguiente acción:
+  <li *ngFor="let error of messages">
+    {{ error }}
+  </li>
+</div>
 
 <div [style.display]="displayMe" style="margin-top: 5%; margin-left: 2.5%; margin-right: 2.5%;">
   <img class="pull-left" style="height: 60px;" src="assets/loading.gif" *ngIf="!loaded">
@@ -65,11 +77,11 @@
 
             <button *ngIf="!user.blocked" type="button" class="btn btn-sm btn-warning my-navbar-button" disabled><i class="fa fa-unlock"></i> Desbloquear</button>
 
-            <button *ngIf="user.blocked" type="button" class="btn btn-sm btn-warning my-navbar-button"><i class="fa fa-unlock"></i> Desbloquear</button>
+            <button *ngIf="user.blocked" (click)="unlockUser(i)" type="button" class="btn btn-sm btn-warning my-navbar-button"><i class="fa fa-unlock"></i> Desbloquear</button>
 
             <button (click)="banUser(i)" type="button" class="btn btn-sm btn-danger my-navbar-button"><i class="fa fa-ban"></i> Dar de baja</button>
 
-            <button type="button" class="btn btn-sm btn-success my-navbar-button"><i class="fa fa-key"></i> Resetear contraseña</button>
+            <button (click)="showResetPasswordModal(i);" type="button" class="btn btn-sm btn-success my-navbar-button"><i class="fa fa-key"></i> Resetear contraseña</button>
 
           </div>
 
@@ -89,7 +101,7 @@
 <div *ngIf="!showAdministrator" class="jumbotron jumbotron-fluid">
   <div class="container">
     <h1 [className]="displayClass">DENTRO DEL SISTEMA CACHAFAS!</h1>
-    <p [className]="leadClass">Bienvenido, Jacobo</p>
+    <p [className]="leadClass">Bienvenido, {{ logedUser.name }}</p>
   </div>
 </div>
 
@@ -218,6 +230,235 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
         <button (click)="updateUser()" type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="parameters-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Parámetros</h5>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+
+          <div *ngIf="errors.length > 0" class="alert alert-danger">
+            <strong>Cuidado!</strong> Tienes los siguientes errores:
+            <li *ngFor="let error of errors">
+              {{ error }}
+            </li>
+          </div>
+
+          <div *ngIf="messagesP.length > 0" class="alert alert-success">
+            <strong>Bien!</strong> Los parámetros han sido actualizados.
+          </div>
+
+          <p><b>Parametros de cuenta:</b></p><hr>
+
+          <div class="form-row">
+            <div class="form-check col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+              <label class="form-check-label">
+                  <input [(ngModel)]="parametersAux.accountCanHaveUpperCaseLetters" type="checkbox" class="form-check-input">
+                  Acepta mayúsculas
+              </label>
+            </div>
+            <div class="form-check col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+              <label class="form-check-label">
+                  <input [(ngModel)]="parametersAux.accountCanHaveNumbers" type="checkbox" class="form-check-input">
+                  Acepta números
+              </label>
+            </div>
+            <div class="form-check col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+              <label class="form-check-label">
+                  <input [(ngModel)]="parametersAux.accountCanHaveUndescores" type="checkbox" class="form-check-input">
+                  Acepta guiones bajos
+              </label>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group input-group-sm mb-3" style="margin-top: 5px;">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Número mínimo de caracteres de la cuenta: </span>
+              </div>
+              <input [(ngModel)]="parametersAux.accountLength" type="number" class="form-control"aria-describedby="inputGroup-sizing-sm">
+            </div>
+          </div>
+
+          <br>
+          <p><b>Parametros de contraseña:</b></p><hr>
+          <div class="form-row">
+            <div class="form-check col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+              <label class="form-check-label">
+                  <input [(ngModel)]="parametersAux.passwordMustHaveUpperCaseLetters" type="checkbox" class="form-check-input">
+                  Al menos una mayúscula
+              </label>
+            </div>
+            <div class="form-check col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+              <label class="form-check-label">
+                  <input [(ngModel)]="parametersAux.passwordMustHaveNumbers" type="checkbox" class="form-check-input">
+                  Al menos un número
+              </label>
+            </div>
+            <div class="form-check col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+              <label class="form-check-label">
+                  <input [(ngModel)]="parametersAux.passwordMustHaveSpecialCharacters" type="checkbox" class="form-check-input">
+                  Al menos un carácter especial
+              </label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="input-group input-group-sm mb-3" style="margin-top: 5px;">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Número mínimo de caracteres de la contraseña: </span>
+              </div>
+              <input [(ngModel)]="parametersAux.passwordLength" type="number" class="form-control"aria-describedby="inputGroup-sizing-sm">
+            </div>
+          </div>
+
+          <br>
+          <p><b>Extras</b></p><hr>
+          <div class="form-row">
+            <div class="input-group input-group-sm mb-3 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top: 5px;">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Número historico de contraseñas: </span>
+              </div>
+              <input [(ngModel)]="parametersAux.maxPasswordHistory" type="number" class="form-control"aria-describedby="inputGroup-sizing-sm">
+            </div>
+            <div class="input-group input-group-sm mb-3 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top: 5px;">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Número máximo de intentos para acceder: </span>
+              </div>
+              <input [(ngModel)]="parametersAux.maxLoginAttempts" type="number" class="form-control"aria-describedby="inputGroup-sizing-sm">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="input-group input-group-sm mb-3 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top: 5px;">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Periodo máximo de inactividad (En minutos): </span>
+              </div>
+              <input [(ngModel)]="parametersAux.maxInactivityPeriod" type="number" class="form-control"aria-describedby="inputGroup-sizing-sm">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button (click)="saveParametersData()" type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Change password modal -->
+<div class="modal fade" id="change-password-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Cambia tu password: </h5>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+
+          <div *ngIf="errors.length > 0" class="alert alert-danger">
+            <strong>Cuidado!</strong> Tienes los siguientes errores:
+            <li *ngFor="let error of errors">
+              {{ error }}
+            </li>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+              <i class="fa fa-id-card"></i>
+              <label>Password actual: </label>
+              <input [(ngModel)]="currentPassword" type="password" class="form-control" placeholder="Password actual">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+              <i class="fa fa-key"></i>
+              <label>Nuevo password: </label>
+              <input [(ngModel)]="password" type="password" class="form-control" placeholder="Nuevo password">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+              <i class="fa fa-key"></i>
+              <label>Confirmación del nuevo password: </label>
+              <input [(ngModel)]="passwordConfirmation" type="password" class="form-control" placeholder="Confirmación de nuevo password">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button (click)="changePassword()" type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Change password modal -->
+
+<!-- Reset password modal -->
+<div class="modal fade" id="reset-password-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Cambia el password de: {{ user.username }}</h5>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+
+          <div *ngIf="errors.length > 0" class="alert alert-danger">
+            <strong>Cuidado!</strong> Tienes los siguientes errores:
+            <li *ngFor="let error of errors">
+              {{ error }}
+            </li>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+              <i class="fa fa-key"></i>
+              <label>Password: </label>
+              <input [(ngModel)]="password" type="password" class="form-control" placeholder="Nuevo password">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+              <i class="fa fa-key"></i>
+              <label>Confirmación del nuevo password: </label>
+              <input [(ngModel)]="passwordConfirmation" type="password" class="form-control" placeholder="Confirmación de nuevo password">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button (click)="resetPassword()" type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Change password modal -->
+
+<div class="modal fade" id="inactivity-dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Tu sesión ha expirado</h5>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <p>Tu sesión ha finalizado de manera automática debido al tiempo de inactividad</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a [routerLink]="['home']" class="btn btn-secondary" data-dismiss="modal">Volver a iniciar sesión</a>
       </div>
     </div>
   </div>
