@@ -1,3 +1,23 @@
+/**
+ *
+ * Proyecto Final - Seguridad Informática
+ * Administrador de usuarios
+ * Autor: Jacobo Misael Tapia de la Rosa
+ * Matricula: 1336590   Carrera: ITC-11
+ * Correo Electronico: A01336590@itesm.mx
+ * Fecha de creacion: 23-abril-2018
+ * Fecha última modificiacion: 27-abril-2018
+ * Nombre Archivo: login.component.ts
+ * Archivos relacionados:
+    * ./login.component.css
+    * ./login.component.html
+    * ./../services/*
+ * Plataforma: Windows y OsX
+ * Descripción: Controlador para el componente de login
+ * @author jatapiaro
+ */
+
+
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UsersComponent } from './../users/users.component';
@@ -19,6 +39,11 @@ import { ISubscription } from "rxjs/Subscription";
 
 export class LoginComponent implements OnInit {
 
+  /**
+  * @param username : string el nombre de usuario
+  * @param password : string el password
+  * @param errors : string[] arreglo para guardar errores
+  */
   public username : string;
   public password : string;
   public errors : string[];
@@ -73,6 +98,12 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  /**
+  * se llama al hacer click en el botón login
+  * valida los errores de parametros faltantes
+  * y si no hay, envía los datos para verificar
+  * si es posible iniciar sesión
+  */
   login() {
     this.errors = [];
     if ( !this.username || this.username.length == 0 ) {
@@ -88,6 +119,12 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  /**
+  * Envía los datos a la base de datos
+  * además, en este paso se válida que la cuenta sirva
+  * y que el password sea correcto, si todo esta bien
+  * se envía al usuario al administrador
+  */
   makeFirebaseLogin() {
     let users = [];
     let justOnce = true;
@@ -144,6 +181,9 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  /**
+  * Envían un log
+  */
   sendLog(description : string, username : string) {
     let l = new Log();
     l.description = description;
@@ -152,10 +192,16 @@ export class LoginComponent implements OnInit {
     this.logService.pushLog(l);
   }
 
+  /**
+  * Redireaccionan a la página de reset password
+  */
   goToResetPassword() {
     this.router.navigate(['reset']);
   }
 
+  /**
+  * Redireaccionan a la página de usuarios / administración
+  */
   goToUsers() {
     this.router.navigate(['users']);
   }

@@ -1,3 +1,22 @@
+/**
+ *
+ * Proyecto Final - Seguridad Informática
+ * Administrador de usuarios
+ * Autor: Jacobo Misael Tapia de la Rosa
+ * Matricula: 1336590   Carrera: ITC-11
+ * Correo Electronico: A01336590@itesm.mx
+ * Fecha de creacion: 23-abril-2018
+ * Fecha última modificiacion: 27-abril-2018
+ * Nombre Archivo: user.service.ts
+ * Archivos relacionados:
+    * ./../components/*
+    * ./../models/Parameters.ts
+ * Plataforma: Windows y OsX
+   * Descripción: Servicio para manejar los datos de los parámetros en la db
+ * @author jatapiaro
+ */
+
+
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Parameters } from '../models/Parameters';
@@ -13,10 +32,17 @@ export class ParametersService {
     this.parametersList = this.firebase.list('parameters');
   }
 
+  /**
+  * Regresa los parametros de la db
+  * @return AngularFireList<any>
+  */
   getParametersList() {
     return this.parametersList;
   }
 
+  /**
+  * Carga en la base de datos la configuración inicial
+  */
   uploadFirstParameters() {
     this.parametersList.push({
       passwordLength: 8,
@@ -33,6 +59,10 @@ export class ParametersService {
     })
   }
 
+  /**
+  * Actuaiza los parámetros en la bd
+  * @param parameters : Parameters
+  */
   updateParameters( parameters : Parameters ) {
     console.log(parameters);
     this.parametersList.update(parameters.firebaseKey, {
@@ -55,6 +85,7 @@ export class ParametersService {
   * Valida que el username tenga las caracteristicas asignadas
   * @param parameters : Parameters objecto de parametros a evaluar
   * @param username : string username a evaluar
+  * @return errors[] la lista de errores que encontro
   */
   validateUsernameRequirements( parameters : Parameters, username : string ) {
     let errors = [];
@@ -85,6 +116,7 @@ export class ParametersService {
   * @param parameters : Parameters objecto de parametros a evaluar
   * @param passwordHistory : string[] la lista de contraseñas previas
   * @param password : string el nuevo password
+  * @return errors[] la lista de errores que encontro
   */
   validatePasswordRequirements( parameters : Parameters, passwordHistory : string[], password : string  ) {
     let errors = [];
@@ -117,6 +149,11 @@ export class ParametersService {
     return errors;
   }
 
+  /**
+  * Verifica si un passsword tiene caracteres especiales
+  * @param password : string el password a verificar
+  * @return boolean si tiene caraácteres espciales
+  */
   private checkSpecialCharacters( password  : string ) {
     var splChars = "+-*|,\":<>[]{}`\';()@&$#%";
     for (var i = 0; i < password.length; i++) {

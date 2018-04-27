@@ -6,11 +6,13 @@
  * Matricula: 1336590   Carrera: ITC-11
  * Correo Electronico: A01336590@itesm.mx
  * Fecha de creacion: 23-abril-2018
- * Fecha última modificiacion: 23-abril-2018
+ * Fecha última modificiacion: 27-abril-2018
  * Nombre Archivo: user.component.ts
  * Archivos relacionados:
     * ./user.component.css
     * ./user.component.html
+    * ./../services/*
+    * ./../models/*
  * Plataforma: Windows y OsX
  * Descripción: Controlador para el componente de usuarios
  * @author jatapiaro
@@ -288,6 +290,7 @@ export class UsersComponent implements OnInit {
 
   /**
   * Checamos que el username no este siendo usado
+  * @return boolean si el username esta siendo usado
   */
   validateIfUsernameIsNotUsed() {
     for ( let user of this.userList ) {
@@ -353,6 +356,10 @@ export class UsersComponent implements OnInit {
     jQuery("#update-user-modal").modal("show");
   }
 
+  /**
+  * Cuando todos los datos de creación están bien
+  * guardamos el nuevo usuario en la base de datos
+  */
   updateUser() {
     this.validateUserCreationErrors(false);
     if ( this.errors.length == 0 ) {
@@ -380,7 +387,7 @@ export class UsersComponent implements OnInit {
 
   /**
   * Se llama cuando se da click al botón de cambiar contraseña
-  * desplegando el modal para el cambio
+  * desplegando el modal para el cambio.
   */
   showChangePasswordModal() {
     this.userService.updateUserActivity(this.logedUser);
@@ -392,6 +399,11 @@ export class UsersComponent implements OnInit {
     jQuery("#change-password-modal").modal("show");
   }
 
+  /**
+  * Se ejecuta cuando se da click en el botón
+  * de cambiar contraseña en el modal dedicado a eso
+  * Si  no hay errores, entonces guardamos los datos
+  */
   changePassword() {
     this.errors = [];
     if ( this.currentPassword.length == 0 ) {
@@ -445,6 +457,12 @@ export class UsersComponent implements OnInit {
     jQuery("#reset-password-modal").modal("show");
   }
 
+  /**
+  * Al dar reset password en el modal dedicado
+  * para restear el password de un usuario
+  * y la contraseña es correcta y cumple con los
+  * parametros estipulados, actualizamos el usuario
+  */
   resetPassword() {
     this.errors = [];
     if ( this.password.length == 0 ) {
@@ -478,6 +496,11 @@ export class UsersComponent implements OnInit {
   * Métodos para modificar parametros
   * --------------------------------*/
 
+  /**
+  * Cuando en el modal para cambiar parámetros
+  * damos click en guardar, se válidan los datos
+  * y de ser correctos se guardan en la base de datos
+  */
   saveParametersData() {
     this.errors = [];
     this.messagesP = [];
@@ -516,6 +539,11 @@ export class UsersComponent implements OnInit {
     }
   }
 
+  /**
+  * Guarda los datos de parámetros en la base de datos
+  * y actualiza a los usuarios su número de intentos
+  * si es que se modifico dicho parámetro
+  */
   updateParametersInFirebase() {
     this.parametersService.updateParameters(this.parametersAux);
     this.userService.updateUserActivity(this.logedUser);
@@ -528,6 +556,10 @@ export class UsersComponent implements OnInit {
     this.parameters = this.parametersAux;
   }
 
+  /**
+  * Al dar click en el botón de parámetros
+  * este método se llama y muestra el modal
+  */
   showParametersModal() {
     this.errors = [];
     this.messagesP = [];
@@ -536,6 +568,9 @@ export class UsersComponent implements OnInit {
     jQuery("#parameters-modal").modal("show");
   }
 
+  /**
+  * Clona los datos de parámetros en una variable auxuiliar
+  */
   private setParametersAuxData() {
     this.parametersAux = new Parameters();
     this.parametersAux.firebaseKey = this.parameters.firebaseKey;
@@ -557,12 +592,19 @@ export class UsersComponent implements OnInit {
   * Métodos auxiliares
   * --------------------------------*/
 
+  /**
+  * Desbloquea a un usuario bloqueado
+  * @param index : number el indice del arreglo en el que el usuario esta
+  */
   unlockUser( index : number ) {
     this.userService.updateUserActivity(this.logedUser);
     let user = this.userList[index];
     this.userService.unlockUser(user, this.parameters.maxLoginAttempts);
   }
 
+  /**
+  * Cierra sesión y redirige a login
+  */
   logout() {
     this.userService.logout(this.logedUser);
     this.securityService.logout();
@@ -601,6 +643,11 @@ export class UsersComponent implements OnInit {
     }
   }
 
+  /**
+  * Da de baja un usuario
+  * @param index : number la posición en el arreglo de usuarios
+  *   del usuario que se dara de baja
+  */
   banUser(index : number) {
     this.userService.updateUserActivity(this.logedUser);
     this.userService.banUser(this.userList[index]);
@@ -618,9 +665,15 @@ export class UsersComponent implements OnInit {
     this.toggleAdministrationPanel(false);
   }
 
+  /**
+  * Despliega una alerta de success
+  * tras alguna acción
+  * @param message : string el mensaje a desplegar
+  */
   pushMessage( message : string ) {
     this.messages = [];
     this.messages.push(message);
+    //Se borra tras 2.5 segundos
     setTimeout(() => {
       this.messages = [];
     }, 2500);
@@ -628,7 +681,7 @@ export class UsersComponent implements OnInit {
 
   /**
   * Verifica si el usuario ya está inactivo
-  * para cerrar su sesión
+  * para cerrar su sesión. Se ejecuta cada minuto
   */
   private checkInactivity() {
     this.logedUser = this.securityService.getSession();
@@ -645,6 +698,12 @@ export class UsersComponent implements OnInit {
     }, 60000);
   }
 
+  /**
+  * Método auxiliar para enviar un log a la base de datos
+  * @param description : string descripción de lo sucedido
+  * @param username : string con que cuenta se hizo
+  * @param type : string que tipo de evento fue
+  */
   private sendLog(description : string, username : string, type : string) {
     let l = new Log();
     l.description = description;

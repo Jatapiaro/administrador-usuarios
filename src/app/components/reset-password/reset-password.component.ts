@@ -1,3 +1,24 @@
+/**
+ *
+ * Proyecto Final - Seguridad Informática
+ * Administrador de usuarios
+ * Autor: Jacobo Misael Tapia de la Rosa
+ * Matricula: 1336590   Carrera: ITC-11
+ * Correo Electronico: A01336590@itesm.mx
+ * Fecha de creacion: 23-abril-2018
+ * Fecha última modificiacion: 27-abril-2018
+ * Nombre Archivo: reset.component.ts
+ * Archivos relacionados:
+    * ./reset.component.css
+    * ./reset.component.html
+    * ./user/*
+    * ./../services/user.service.ts
+    * ./../services/parameters.service.ts
+ * Plataforma: Windows y OsX
+ * Descripción: Controlador para el componente de login
+ * @author jatapiaro
+ */
+
 import { Component, OnInit } from '@angular/core';
 import { SecurityService } from './../../services/security.service';
 import { ParametersService } from './../../services/parameters.service';
@@ -68,6 +89,12 @@ export class ResetPasswordComponent implements OnInit {
     this.router.navigate(['users']);
   }
 
+  /**
+  * Al hacer click en el botón de ingresar
+  * valida que el nuevo password este correcto
+  * y cumpla con los parametros, de ser así
+  * logea al usuario
+  */
   updatePassword() {
     if ( this.once ) {
       this.once = false;
@@ -87,6 +114,11 @@ export class ResetPasswordComponent implements OnInit {
     }
   }
 
+  /**
+  * Valida que los datos del usuario
+  * esten llenados, es deicr no los dejo
+  * en blanco
+  */
   validatePasswordsAreFilled() {
     if ( !this.password || this.password.length == 0 ) {
       this.errors.push("Debes ingresar el password");
@@ -96,12 +128,19 @@ export class ResetPasswordComponent implements OnInit {
     }
   }
 
+  /**
+  * Válida que el password y la confirmación coincidan
+  */
   validatePasswordMatch() {
     if ( this.password != this.passwordConfirmation ) {
       this.errors.push("El password y su confirmación no coinciden");
     }
   }
 
+  /**
+  * Valida que el nuevo password coincida con
+  * los parametros estipulados
+  */
   validatePasswordRequirements() {
     this.errors = this.parametersService.validatePasswordRequirements(this.parameters, this.user.passwordHistory, this.password);
   }

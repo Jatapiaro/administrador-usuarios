@@ -20,6 +20,14 @@
 
 export class Log {
 
+  /**
+  * @param key : string el id del Log
+  * @param type : string el tipo de evento
+  * @param ip : string la ip desde la que se hizo
+  * @param username : string el user que lo hizo
+  * @param description : string lo que paso
+  * @param timestamp : number unix timestamp de cuando sucedio
+  */
   key : string;
   type : string;
   ip : string;
