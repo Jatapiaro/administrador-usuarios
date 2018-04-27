@@ -14,7 +14,7 @@
         <button (click)="changeJumbotronColor('warning-color')" type="button" class="btn btn-warning my-navbar-button"><i class="fa fa-bars"></i> Menú 1</button>
       </li>
       <li *ngIf="logedUser.profile == '1'" class="nav-item">
-        <button type="button" class="btn btn-info my-navbar-button"><i class="fa fa-line-chart"></i> Bitácoras</button>
+        <button (click)="toggleLogPanel(true)" type="button" class="btn btn-info my-navbar-button"><i class="fa fa-line-chart"></i> Bitácoras</button>
       </li>
       <li *ngIf="logedUser.profile != '1'" class="nav-item">
         <button (click)="changeJumbotronColor('info-color')" type="button" class="btn btn-info my-navbar-button"><i class="fa fa-ellipsis-h"></i> Menú 2</button>
@@ -42,10 +42,10 @@
   </li>
 </div>
 
-<div [style.display]="displayMe" style="margin-top: 5%; margin-left: 2.5%; margin-right: 2.5%;">
+<div [style.display]="displayMe" style="margin-top: 1%; margin-left: 2.5%; margin-right: 2.5%;">
   <img class="pull-left" style="height: 60px;" src="assets/loading.gif" *ngIf="!loaded">
   <button (click)="showCreateUserModal()" type="button" class="btn btn-success my-navbar-button pull-right"><i class="fa fa-user-plus"></i> Añadir Usuario</button>
-  <table width="100%" class="cell-bordered" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+  <table id="datatable1" width="100%" class="cell-bordered" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
     <thead>
       <tr>
         <th data-priority="3">Nombre</th>
@@ -93,6 +93,30 @@
           </div>
 
         </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div [style.display]="displayMe2" style="margin-top: 2%; margin-left: 2.5%; margin-right: 2.5%;">
+  <img class="pull-left" style="height: 60px;" src="assets/loading.gif" *ngIf="!loaded2">
+  <table id="datatable2" width="100%" class="cell-bordered" datatable [dtOptions]="dtOptions2" [dtTrigger]="dtTrigger2" class="row-border hover">
+    <thead>
+      <tr>
+        <th data-priority="1">Fecha: </th>
+        <th data-priority="2">Tipo de evento</th>
+        <th data-priority="3">IP</th>
+        <th data-priority="4">Relizado por el usuario</th>
+        <th data-priority="5">Descripción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of logList;">
+        <td>{{ log.timestamp | activity }}</td>
+        <td>{{ log.type }}</td>
+        <td>{{ log.ip }}</td>
+        <td>{{ log.username }}</td>
+        <td style="max-width: 700px"><span style="text-overflow: ellipsis; word-wrap:break-word; display: block;">{{ log.description }}</span></td>
       </tr>
     </tbody>
   </table>

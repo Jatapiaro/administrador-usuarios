@@ -63,11 +63,16 @@ export class UsersComponent implements OnInit {
   currentPassword : string;
   displayClass : string;
   displayMe : string;
+  displayMe2 : string;
   dtOptions: any;
+  dtOptions2: any;
   dtTrigger: Subject<any>;
+  dtTrigger2: Subject<any>;
   errors : string[];
   leadClass : string;
   loaded : boolean;
+  loaded2 : boolean;
+  logList : Log[];
   logedUser : any;
   messages : string[];
   messagesP : string[];
@@ -81,6 +86,7 @@ export class UsersComponent implements OnInit {
 
   public subscription : ISubscription;
   public subscription2 : ISubscription;
+  public subscription3 : ISubscription;
   public once : boolean;
 
   /**
@@ -98,9 +104,11 @@ export class UsersComponent implements OnInit {
     this.leadClass = `lead ${this.color}`;
     this.dtOptions = {};
     this.dtTrigger = new Subject();
+    this.dtTrigger2 = new Subject();
     this.errors = [];
     this.showAdministrator = false;
     this.displayMe = "none";
+    this.displayMe2 = "none";
     this.user = new User();
     this.dtOptions = {
       aoColumnDefs: [{ bSortable: false, aTargets: [8] }],
@@ -121,7 +129,24 @@ export class UsersComponent implements OnInit {
         }
       ],
     };
+    this.dtOptions2 = {
+      pagingType: 'first_last_numbers',
+      pageLength: 10,
+      retrieve: true,
+      pagination: true,
+      responsive: true,
+      sortable: false,
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'excelHtml5',
+          text: 'Exportar a Excel',
+          filename: 'bitacora',
+        }
+      ]
+    };
     this.loaded = false;
+    this.loaded2 = false;
     this.parametersAux = new Parameters();
     this.errors = [];
     this.user = new User();
@@ -162,6 +187,18 @@ export class UsersComponent implements OnInit {
       });
     });
 
+    var a = this.logService.getData();
+    this.subscription3 = a.snapshotChanges().subscribe(item => {
+      this.logList = [];
+      this.dtTrigger2.next();
+      this.loaded2 = true;
+      item.forEach(element => {
+        var b = element.payload.toJSON();
+        b["key"] = element.key;
+        this.logList.unshift(b as Log);
+      });
+    });
+
     var w = this.parametersService.getParametersList();
     this.subscription2 = w.snapshotChanges().subscribe(item => {
       let parametersList = [];
@@ -189,6 +226,9 @@ export class UsersComponent implements OnInit {
     }
     if ( this.subscription2 ) {
       this.subscription2.unsubscribe();
+    }
+    if ( this.subscription3 ) {
+      this.subscription3.unsubscribe();
     }
   }
 
@@ -535,13 +575,29 @@ export class UsersComponent implements OnInit {
   */
   toggleAdministrationPanel( show : boolean ) {
     this.userService.updateUserActivity(this.logedUser);
-    if ( this.showAdministrator != show  ) {
-      this.showAdministrator = show;
-      if ( this.showAdministrator ) {
-        this.displayMe = "block";
-      } else {
-        this.displayMe = "none";
-      }
+    this.showAdministrator = show;
+    if ( this.showAdministrator ) {
+      this.displayMe = "block";
+      this.displayMe2 = "none";
+    } else {
+      this.displayMe = "none";
+      this.displayMe2 = "none";
+    }
+  }
+
+  /**
+  * Muestra u oculta el panel de administración
+  * @param show : boolean si debe mostrarse o no
+  */
+  toggleLogPanel( show : boolean ) {
+    this.userService.updateUserActivity(this.logedUser);
+    this.showAdministrator = show;
+    if ( this.showAdministrator ) {
+      this.displayMe = "none";
+      this.displayMe2 = "block";
+    } else {
+      this.displayMe = "none";
+      this.displayMe2 = "none";
     }
   }
 

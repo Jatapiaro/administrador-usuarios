@@ -14,6 +14,10 @@ export class LogService {
     this.logList = this.firebase.list('logs');
   }
 
+  getData() {
+    return this.logList;
+  }
+
   pushLog(log : Log) {
     this.http.get('https://jsonip.com').subscribe( data => {
       this.logList.push({
