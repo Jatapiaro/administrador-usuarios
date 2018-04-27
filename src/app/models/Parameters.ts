@@ -27,7 +27,7 @@ export class Parameters {
   passwordMustHaveLowerCaseLetters : boolean = true;
   passwordMustHaveUpperCaseLetters : boolean = true;
 
-  accountLength : number = 6;
+  accountLength : number = 5;
   accountCanHaveNumbers : boolean = true;
   accountCanHaveUpperCaseLetters : boolean = true;
   accountCanHaveUndescores : boolean = true;

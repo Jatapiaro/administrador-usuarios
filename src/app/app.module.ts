@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 /*
 * Rutas
@@ -32,6 +33,7 @@ import { UsersComponent } from './components/users/users.component';
 import { SecurityService } from "./services/security.service";
 import { UserService } from "./services/user.service";
 import { ParametersService } from "./services/parameters.service";
+import { LogService } from "./services/log.service";
 
 /*
 * Pipes
@@ -65,12 +67,15 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
     BrowserModule,
     DataTablesModule,
     NgxElectronModule,
+    HttpClientModule,
     FormsModule,
   ],
   providers: [
     SecurityService,
     UserService,
-    ParametersService
+    ParametersService,
+    LogService,
+    HttpClientModule
   ],
   bootstrap: [AppComponent]
 })

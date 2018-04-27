@@ -19,10 +19,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from './../../models/User';
+import { Log } from './../../models/Log';
 import { Parameters } from './../../models/Parameters';
 import { UserService } from './../../services/user.service';
 import { SecurityService } from './../../services/security.service';
 import { ParametersService } from './../../services/parameters.service';
+import { LogService } from './../../services/log.service';
 import { Subject } from 'rxjs/Subject';
 import { OnDestroy } from "@angular/core";
 import { ISubscription } from "rxjs/Subscription";
@@ -88,7 +90,8 @@ export class UsersComponent implements OnInit {
   constructor( private userService : UserService,
     private securityService : SecurityService,
     private router : Router,
-    private parametersService : ParametersService) {
+    private parametersService : ParametersService,
+    private logService : LogService) {
 
     this.color = "my-default-color";
     this.displayClass = `display-4 ${this.color}`;
@@ -111,8 +114,9 @@ export class UsersComponent implements OnInit {
         {
           extend: 'excelHtml5',
           text: 'Exportar a Excel',
+          filename: 'usuarios',
           exportOptions: {
-            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
           }
         }
       ],
@@ -198,6 +202,7 @@ export class UsersComponent implements OnInit {
   * un usuario en el modal de creación
   */
   createUser() {
+    this.userService.updateUserActivity(this.logedUser);
     this.validateUserCreationErrors(true);
     if ( this.errors.length == 0 ) {
       if ( this.validateIfUsernameIsNotUsed() ) {
@@ -260,9 +265,22 @@ export class UsersComponent implements OnInit {
   storeUserInFirebase() {
     this.user.remainingAttempts = this.parameters.maxLoginAttempts;
     this.userService.insertUser(this.user);
+    this.userService.updateUserActivity(this.logedUser);
     this.user = new User();
     this.errors = [];
     jQuery("#create-user-modal").modal("hide");
+  }
+
+  /**
+  * Se llama cuando se da click al botón de nuevo usuario
+  * desplegando el modal para la creación
+  */
+  showCreateUserModal() {
+    this.userService.updateUserActivity(this.logedUser);
+    this.user = new User();
+    this.user.passwordHistory = [];
+    this.errors = [];
+    jQuery("#create-user-modal").modal("show");
   }
 
 
@@ -272,21 +290,11 @@ export class UsersComponent implements OnInit {
   * --------------------------------*/
 
   /**
-  * Se llama cuando se da click al botón de nuevo usuario
-  * desplegando el modal para la creación
-  */
-  showCreateUserModal() {
-    this.user = new User();
-    this.user.passwordHistory = [];
-    this.errors = [];
-    jQuery("#create-user-modal").modal("show");
-  }
-
-  /**
   * Se llama cuando se da click al botón de actualizar usuario
   * desplegando el modal para la actualización
   */
   showUpdateUserModal(index : number) {
+    this.userService.updateUserActivity(this.logedUser);
     this.user = new User();
     /*
     * Copiamos el contenido del usuario deseado
@@ -335,6 +343,7 @@ export class UsersComponent implements OnInit {
   * desplegando el modal para el cambio
   */
   showChangePasswordModal() {
+    this.userService.updateUserActivity(this.logedUser);
     this.logedUser = this.securityService.getSession();
     this.errors = [];
     this.password = "";
@@ -371,6 +380,7 @@ export class UsersComponent implements OnInit {
         if ( this.errors.length == 0 ) {
           this.logedUser.password = this.password;
           this.userService.updateUserPasswordSimple(this.logedUser);
+          this.userService.updateUserActivity(this.logedUser);
           this.pushMessage("La contraseña se ha cambiado exitosamente");
           jQuery("#change-password-modal").modal("hide");
         }
@@ -385,6 +395,7 @@ export class UsersComponent implements OnInit {
   * desplegando el modal para el cambio
   */
   showResetPasswordModal(index : number) {
+    this.userService.updateUserActivity(this.logedUser);
     this.user = new User();
     this.user = this.userList[index];
     this.user.passwordHistory = Object.values(this.user.passwordHistory);
@@ -416,6 +427,7 @@ export class UsersComponent implements OnInit {
       if ( this.errors.length == 0 ) {
         this.logedUser.password = this.password;
         this.userService.resetPassword(this.user, this.password, this.parameters.maxLoginAttempts);
+        this.userService.updateUserActivity(this.logedUser);
         this.pushMessage("La contraseña se ha reseteado");
         jQuery("#reset-password-modal").modal("hide");
       }
@@ -466,17 +478,21 @@ export class UsersComponent implements OnInit {
 
   updateParametersInFirebase() {
     this.parametersService.updateParameters(this.parametersAux);
+    this.userService.updateUserActivity(this.logedUser);
     this.pushMessage("Los parámetros han sido actualizados");
+    this.sendLog(`La cuenta ${this.logedUser.username} cerró sesión debido a inactividad`, this.logedUser.username, "Modificación de parámetros");
     jQuery("#parameters-modal").modal("hide");
     for ( let user of this.userList ) {
       this.userService.updateUserRemainingAttempts(user, this.parametersAux.maxLoginAttempts);
     }
+    this.parameters = this.parametersAux;
   }
 
   showParametersModal() {
     this.errors = [];
     this.messagesP = [];
     this.setParametersAuxData();
+    this.userService.updateUserActivity(this.logedUser);
     jQuery("#parameters-modal").modal("show");
   }
 
@@ -488,7 +504,7 @@ export class UsersComponent implements OnInit {
     this.parametersAux.accountCanHaveUpperCaseLetters = this.parameters.accountCanHaveUpperCaseLetters;
     this.parametersAux.accountLength = this.parameters.accountLength;
     this.parametersAux.maxLoginAttempts = this.parameters.maxLoginAttempts;
-    this.parametersAux.maxPasswordHistory = this.parameters.maxLoginAttempts;
+    this.parametersAux.maxPasswordHistory = this.parameters.maxPasswordHistory;
     this.parametersAux.passwordLength = this.parameters.passwordLength;
     this.parametersAux.passwordMustHaveLowerCaseLetters = this.parameters.passwordMustHaveLowerCaseLetters;
     this.parametersAux.passwordMustHaveNumbers = this.parameters.passwordMustHaveNumbers;
@@ -502,12 +518,12 @@ export class UsersComponent implements OnInit {
   * --------------------------------*/
 
   unlockUser( index : number ) {
+    this.userService.updateUserActivity(this.logedUser);
     let user = this.userList[index];
     this.userService.unlockUser(user, this.parameters.maxLoginAttempts);
   }
 
   logout() {
-    console.log(this.parameters);
     this.userService.logout(this.logedUser);
     this.securityService.logout();
     this.router.navigate(['home']);
@@ -518,6 +534,7 @@ export class UsersComponent implements OnInit {
   * @param show : boolean si debe mostrarse o no
   */
   toggleAdministrationPanel( show : boolean ) {
+    this.userService.updateUserActivity(this.logedUser);
     if ( this.showAdministrator != show  ) {
       this.showAdministrator = show;
       if ( this.showAdministrator ) {
@@ -529,6 +546,7 @@ export class UsersComponent implements OnInit {
   }
 
   banUser(index : number) {
+    this.userService.updateUserActivity(this.logedUser);
     this.userService.banUser(this.userList[index]);
   }
 
@@ -537,6 +555,7 @@ export class UsersComponent implements OnInit {
   * @param color : string nuevo color
   */
   changeJumbotronColor( color : string ) {
+    this.userService.updateUserActivity(this.logedUser);
     this.color = color;
     this.displayClass = `display-4 ${this.color}`;
     this.leadClass = `lead ${this.color}`;
@@ -568,6 +587,14 @@ export class UsersComponent implements OnInit {
     setTimeout(() => {
       this.checkInactivity();
     }, 60000);
+  }
+
+  private sendLog(description : string, username : string, type : string) {
+    let l = new Log();
+    l.description = description;
+    l.type = type;
+    l.username = username;
+    this.logService.pushLog(l);
   }
 
 }
