@@ -169,6 +169,7 @@ export class UserService {
       passwordHistory: user.passwordHistory,
       mustResetPassword: user.mustResetPassword,
       lastActivity: moment().unix(),
+      isOnline: true,
     });
     this.sendLog("Se actualizo el password de la cuenta "+user.username+" al ser la primera vez o una recuperación de contraseña", user.username, this.eventoDeAcceso);
   }

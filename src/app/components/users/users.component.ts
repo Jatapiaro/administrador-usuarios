@@ -520,7 +520,7 @@ export class UsersComponent implements OnInit {
     this.parametersService.updateParameters(this.parametersAux);
     this.userService.updateUserActivity(this.logedUser);
     this.pushMessage("Los parámetros han sido actualizados");
-    this.sendLog(`La cuenta ${this.logedUser.username} cerró sesión debido a inactividad`, this.logedUser.username, "Modificación de parámetros");
+    this.sendLog(`La cuenta ${this.logedUser.username} actualizó los parametros ${JSON.stringify(this.parametersAux)}`, this.logedUser.username, "Modificación de parámetros");
     jQuery("#parameters-modal").modal("hide");
     for ( let user of this.userList ) {
       this.userService.updateUserRemainingAttempts(user, this.parametersAux.maxLoginAttempts);
